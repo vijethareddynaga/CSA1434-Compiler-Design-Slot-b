@@ -1,0 +1,55 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_RULES 10
+#define MAX_SYMBOLS 10
+
+char productions[MAX_RULES][MAX_SYMBOLS];
+int numRules;
+
+void eliminateLeftRecursion();
+
+int main() {
+    printf("Enter number of productions: ");
+    scanf("%d", &numRules);
+    
+    printf("Enter productions (A->Aα|β format):\n");
+    for (int i = 0; i < numRules; i++) {
+        scanf("%s", productions[i]);
+    }
+    
+    eliminateLeftRecursion();
+    
+    return 0;
+}
+
+void eliminateLeftRecursion() {
+    printf("\nEliminating Left Recursion...\n");
+    
+    for (int i = 0; i < numRules; i++) {
+        char nonTerminal = productions[i][0];
+        char alpha[MAX_SYMBOLS], beta[MAX_SYMBOLS];
+        
+        if (productions[i][3] == nonTerminal) { 
+            int j = 4, k = 0;
+            while (productions[i][j] != '|' && productions[i][j] != '\0') {
+                alpha[k++] = productions[i][j++];
+            }
+            alpha[k] = '\0';
+            
+            if (productions[i][j] == '|') {
+                j++;  
+                k = 0;
+                while (productions[i][j] != '\0') {
+                    beta[k++] = productions[i][j++];
+                }
+                beta[k] = '\0';
+                
+                printf("%c -> %s%c'\n", nonTerminal, beta, nonTerminal);
+                printf("%c' -> %s%c' | ε\n", nonTerminal, alpha, nonTerminal);
+            }
+        } else {
+            printf("%s\n", productions[i]);
+        }
+    }
+}
